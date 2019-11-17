@@ -35,7 +35,7 @@
 			if (options.stats){
 				stats.update();
 			}
-			if (TWEEN){
+			if (typeof TWEEN !== 'undefined'){
 				TWEEN.update();
 			}
 			_this.controls.update();
