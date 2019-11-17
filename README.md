@@ -10,4 +10,5 @@ var D3 = D3SCENE({
 });
 // Create a new mesh, and add to the scene.
 var shape = D3.Shape();
+shape.position.x = 1;
 ```
