@@ -12,6 +12,8 @@
 		this.scene = new THREE.Scene();
 		this.camera = options.camera || new THREE.PerspectiveCamera(75, this.width / this.height, 0.01, 1000);
 		this.controls = options.controls || new THREE.OrbitControls(this.camera);
+		this.id = options.id;
+		this.class = options.class;
 		if (options.stats){
 			var stats = new Stats();
 		}
@@ -19,6 +21,8 @@
 		this.init = function() {
 			this.renderer.setSize(this.width, this.height);
 			this.container.append(this.renderer.domElement);
+			if (this.id) this.renderer.domElement.id = this.id;
+			if (this.class) $(this.renderer.domElement).addClass(this.class);
 			if (options.stats){
 				this.container.append(stats.dom);
 			}
