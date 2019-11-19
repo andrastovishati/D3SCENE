@@ -63,6 +63,14 @@
 		return mesh;
 	};
 
+	component.prototype.Points = function(geometry) {
+		var material = new THREE.PointsMaterial({size:0.1});
+		var geometry = geometry || new THREE.BoxGeometry();
+		var points = new THREE.Points(geometry, material);
+		this.scene.add(points);
+		return points;
+	}
+
 	component.prototype.Light = function(type) {
 		var light = type || new THREE.SpotLight();
 		light.position.set(10, 10, 10);
