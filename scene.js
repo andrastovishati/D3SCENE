@@ -11,7 +11,7 @@
 		this.renderer = options.renderer || new THREE.WebGLRenderer({alpha:true});
 		this.scene = new THREE.Scene();
 		this.camera = options.camera || new THREE.PerspectiveCamera(75, this.width / this.height, 0.01, 1000);
-		this.controls = options.controls || new THREE.OrbitControls(this.camera);
+		this.controls = options.controls !== undefined ? options.controls : new THREE.OrbitControls(this.camera);
 		this.id = options.id;
 		this.class = options.class;
 		if (options.stats){
@@ -42,7 +42,9 @@
 			if (typeof TWEEN !== 'undefined'){
 				TWEEN.update();
 			}
-			_this.controls.update();
+			if (typeof _this.controls === 'object'){
+				_this.controls.update();
+			}
 			_this.animate();
 			_this.renderer.render(_this.scene, _this.camera);
 		}
