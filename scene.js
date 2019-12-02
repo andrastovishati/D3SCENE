@@ -117,16 +117,18 @@
 		var gui = this.datGUI;
 		keys = keys || Object.keys(object);
 		options = options || {};
-		var min = options.min || -10;
-		var max = options.max || 10;
-		var step = options.step || 0.1;
+		var min = options.min !== undefined ? options.min : -10;
+		var max = options.max !== undefined ? options.max : 10;
+		var step = options.step !== undefined ? options.step : 0.1;
 		var names = options.names || [];
+		var onChanges = options.onChanges || [];
 		$.each(keys, function(i, key) {
-			if (typeof object[key] === 'number'){
-				var obj = gui.add(object, key, min, max, step);
-				if (names[i]){
-					obj.name(names[i]);
-				}
+			var obj = gui.add(object, key, min, max, step);
+			if (names[i]){
+				obj.name(names[i]);
+			}
+			if (onChanges[i]){
+				obj.onChange(onChanges[i]);
 			}
 		});
 		return this.datGUI;
