@@ -12,3 +12,13 @@ var D3 = D3SCENE({
 var shape = D3.Shape();
 shape.position.x = 1;
 ```
+
+## Dependencies
+
+### required
+THREE.js
+jQuery.js
+### optional
+OrbitControls.js
+stats.js
+dat.GUI.js
