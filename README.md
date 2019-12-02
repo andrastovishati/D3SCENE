@@ -19,6 +19,7 @@ shape.position.x = 1;
 THREE.js
 jQuery.js
 ### optional
+TWEEN.js
 OrbitControls.js
 stats.js
 dat.GUI.js
