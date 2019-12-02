@@ -17,6 +17,9 @@
 		if (options.stats){
 			var stats = new Stats();
 		}
+		if (options.datGUI){
+			this.datGUI = new dat.GUI();
+		}
 		this.animate = function() {};
 		this.init = function() {
 			this.renderer.setSize(this.width, this.height);
@@ -26,7 +29,7 @@
 			if (options.stats){
 				this.container.append(stats.dom);
 			}
-			if (this.renderer instanceof THREE.WebGLRenderer){
+			if (this.renderer.setClearColor){
 				this.renderer.setClearColor(0x000000);
 			}
 			this.camera.position.z = 5;
@@ -57,8 +60,8 @@
 		}
 	};
 
-	component.prototype.Shape = function(geometry) {
-		var material = new THREE.MeshBasicMaterial({wireframe:true});
+	component.prototype.Shape = function(geometry, material) {
+		var material = material || new THREE.MeshBasicMaterial({wireframe:true});
 		var geometry = geometry || new THREE.BoxGeometry();
 		var mesh = new THREE.Mesh(geometry, material);
 		this.scene.add(mesh);
@@ -71,13 +74,62 @@
 		var points = new THREE.Points(geometry, material);
 		this.scene.add(points);
 		return points;
-	}
+	};
+
+	component.prototype.Line = function(geometry) {
+		var material = new THREE.LineBasicMaterial();
+		var geometry = geometry || new THREE.BoxGeometry();
+		var lines = new THREE.Line(geometry, material);
+		this.scene.add(lines);
+		return lines;
+	};
+
+	component.prototype.LineSegments = function(geometry) {
+		var material = new THREE.LineBasicMaterial();
+		var geometry = geometry || new THREE.BoxGeometry();
+		var lines = new THREE.LineSegments(geometry, material);
+		this.scene.add(lines);
+		return lines;
+	};
 
 	component.prototype.Light = function(type) {
 		var light = type || new THREE.SpotLight();
 		light.position.set(10, 10, 10);
 		this.scene.add(light);
 		return light;
+	};
+
+	component.prototype.CameraLight = function() {
+		var light = new THREE.SpotLight();
+		this.scene.add(light);
+		light.parent = this.camera;
+		return light;
+	};
+
+	component.prototype.Axes = function(size) {
+		var axesHelper = new THREE.AxesHelper(size);
+		this.scene.add(axesHelper);
+		return axesHelper;
+	};
+
+	component.prototype.GUI = function(object, keys, options) {
+		if (!this.datGUI || !object) return;
+		var gui = this.datGUI;
+		keys = keys || Object.keys(object);
+		options = options || {};
+		var min = options.min || -10;
+		var max = options.max || 10;
+		var step = options.step || 0.1;
+		var names = options.names || [];
+		$.each(keys, function(i, key) {
+			if (typeof object[key] === 'number'){
+				var obj = gui.add(object, key, min, max, step);
+				if (names[i]){
+					obj.name(names[i]);
+				}
+			}
+		});
+		return this.datGUI;
 	};
 
 	window.D3SCENE = function(options) {
