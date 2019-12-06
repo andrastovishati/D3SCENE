@@ -106,10 +106,19 @@
 		return light;
 	};
 
-	component.prototype.Axes = function(size) {
+	component.prototype.AxesHelper = function(size) {
 		var axesHelper = new THREE.AxesHelper(size);
 		this.scene.add(axesHelper);
 		return axesHelper;
+	};
+
+	component.prototype.Vector3Helper = function(vectors, size) {
+		vectors = Array.isArray(vectors) ? vectors : [vectors];
+		size = size || 0.1;
+		for (var i = 0; i < vectors.length; i++){
+			this.Shape(new THREE.OctahedronGeometry(size))
+			.position.copy(vectors[i]);
+		}
 	};
 
 	component.prototype.add = function(object) {
