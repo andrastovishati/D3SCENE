@@ -112,6 +112,14 @@
 		return axesHelper;
 	};
 
+	component.prototype.add = function(object) {
+		var scene = this.scene;
+		$.each(arguments, function(i, obj) {
+			scene.add(obj);
+		});
+		return this.scene;
+	};
+
 	component.prototype.GUI = function(object, keys, options) {
 		if (!this.datGUI || !object) return;
 		var gui = this.datGUI;
