@@ -60,96 +60,92 @@
 		}
 	};
 
-	component.prototype.Shape = function(geometry, material) {
-		var material = material || new THREE.MeshBasicMaterial({wireframe:true});
-		var geometry = geometry || new THREE.BoxGeometry();
-		var mesh = new THREE.Mesh(geometry, material);
-		this.scene.add(mesh);
-		return mesh;
-	};
-
-	component.prototype.Points = function(geometry) {
-		var material = new THREE.PointsMaterial({size:0.1});
-		var geometry = geometry || new THREE.BoxGeometry();
-		var points = new THREE.Points(geometry, material);
-		this.scene.add(points);
-		return points;
-	};
-
-	component.prototype.Line = function(geometry) {
-		var material = new THREE.LineBasicMaterial();
-		var geometry = geometry || new THREE.BoxGeometry();
-		var lines = new THREE.Line(geometry, material);
-		this.scene.add(lines);
-		return lines;
-	};
-
-	component.prototype.LineSegments = function(geometry) {
-		var material = new THREE.LineBasicMaterial();
-		var geometry = geometry || new THREE.BoxGeometry();
-		var lines = new THREE.LineSegments(geometry, material);
-		this.scene.add(lines);
-		return lines;
-	};
-
-	component.prototype.Light = function(type) {
-		var light = type || new THREE.SpotLight();
-		light.position.set(10, 10, 10);
-		this.scene.add(light);
-		return light;
-	};
-
-	component.prototype.CameraLight = function() {
-		var light = new THREE.SpotLight();
-		this.scene.add(light);
-		light.parent = this.camera;
-		return light;
-	};
-
-	component.prototype.AxesHelper = function(size) {
-		var axesHelper = new THREE.AxesHelper(size);
-		this.scene.add(axesHelper);
-		return axesHelper;
-	};
-
-	component.prototype.Vector3Helper = function(vectors, size) {
-		vectors = Array.isArray(vectors) ? vectors : [vectors];
-		size = size || 0.1;
-		for (var i = 0; i < vectors.length; i++){
-			this.Shape(new THREE.OctahedronGeometry(size))
-			.position.copy(vectors[i]);
+	Object.assign(component.prototype, {
+		Shape:function(geometry, material) {
+			var material = material || new THREE.MeshBasicMaterial({wireframe:true});
+			var geometry = geometry || new THREE.BoxGeometry();
+			var mesh = new THREE.Mesh(geometry, material);
+			this.scene.add(mesh);
+			return mesh;
+		},
+		Points:function(geometry, material) {
+			var material = material || new THREE.PointsMaterial({size:0.1});
+			var geometry = geometry || new THREE.BoxGeometry();
+			var points = new THREE.Points(geometry, material);
+			this.scene.add(points);
+			return points;
+		},
+		Line:function(geometry) {
+			var material = new THREE.LineBasicMaterial();
+			var geometry = geometry || new THREE.BoxGeometry();
+			var lines = new THREE.Line(geometry, material);
+			this.scene.add(lines);
+			return lines;
+		},
+		LineSegments:function(geometry) {
+			var material = new THREE.LineBasicMaterial();
+			var geometry = geometry || new THREE.BoxGeometry();
+			var lines = new THREE.LineSegments(geometry, material);
+			this.scene.add(lines);
+			return lines;
+		},
+		Light:function(type) {
+			var light = type || new THREE.SpotLight();
+			light.position.set(10, 10, 10);
+			this.scene.add(light);
+			return light;
+		},
+		CameraLight:function() {
+			var light = new THREE.SpotLight();
+			this.scene.add(light);
+			light.parent = this.camera;
+			return light;
+		},
+		AxesHelper:function(size) {
+			var axesHelper = new THREE.AxesHelper(size);
+			this.scene.add(axesHelper);
+			return axesHelper;
+		},
+		Vector3Helper:function(vectors, size) {
+			vectors = Array.isArray(vectors) ? vectors : [vectors];
+			size = size || 0.1;
+			var _this = this;
+			$.each(vectors, function(i, vector){
+				_this.Shape(new THREE.OctahedronGeometry(size))
+				.position.copy(vector);
+			});
+		},
+		add:function(object) {
+			var scene = this.scene;
+			$.each(arguments, function(i, obj) {
+				scene.add(obj);
+			});
+			return this.scene;
+		},
+		GUI:function(object, keys, options) {
+			if (!this.datGUI || !object) return;
+			var gui = this.datGUI;
+			keys = keys || Object.keys(object);
+			options = options || {};
+			var min = options.min !== undefined ? options.min : -10;
+			var max = options.max !== undefined ? options.max : 10;
+			var step = options.step !== undefined ? options.step : 0.1;
+			var names = options.names || [];
+			var onChanges = options.onChanges || [];
+			$.each(keys, function(i, key) {
+				var obj = gui.add(object, key, min, max, step);
+				if (names[i]){
+					obj.name(names[i]);
+				}
+				if (Array.isArray(onChanges) && onChanges[i]){
+					obj.onChange(onChanges[i]);
+				} else if (typeof onChanges === 'function'){
+					obj.onChange(onChanges);
+				}
+			});
+			return this.datGUI;
 		}
-	};
-
-	component.prototype.add = function(object) {
-		var scene = this.scene;
-		$.each(arguments, function(i, obj) {
-			scene.add(obj);
-		});
-		return this.scene;
-	};
-
-	component.prototype.GUI = function(object, keys, options) {
-		if (!this.datGUI || !object) return;
-		var gui = this.datGUI;
-		keys = keys || Object.keys(object);
-		options = options || {};
-		var min = options.min !== undefined ? options.min : -10;
-		var max = options.max !== undefined ? options.max : 10;
-		var step = options.step !== undefined ? options.step : 0.1;
-		var names = options.names || [];
-		var onChanges = options.onChanges || [];
-		$.each(keys, function(i, key) {
-			var obj = gui.add(object, key, min, max, step);
-			if (names[i]){
-				obj.name(names[i]);
-			}
-			if (onChanges[i]){
-				obj.onChange(onChanges[i]);
-			}
-		});
-		return this.datGUI;
-	};
+	});
 
 	window.D3SCENE = function(options) {
 		return new component(options).init();
