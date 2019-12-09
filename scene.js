@@ -14,6 +14,7 @@
 		this.controls = options.controls !== undefined ? options.controls : new THREE.OrbitControls(this.camera);
 		this.id = options.id;
 		this.class = options.class;
+		this.render = options.render === undefined ? true : options.render;
 		if (options.stats){
 			var stats = new Stats();
 		}
@@ -34,8 +35,13 @@
 			}
 			this.camera.position.z = 5;
 			$(root).on('resize', resize);
-			render();
+			if (this.render){
+				render();
+			}
 			return this;
+		};
+		this.update = function() {
+			this.renderer.render(this.scene, this.camera);
 		};
 		function render() {
 			requestAnimationFrame(render);
@@ -49,7 +55,7 @@
 				_this.controls.update();
 			}
 			_this.animate();
-			_this.renderer.render(_this.scene, _this.camera);
+			_this.update();
 		}
 		function resize() {
 			_this.width = _this.container.width();
