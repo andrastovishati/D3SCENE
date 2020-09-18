@@ -74,12 +74,67 @@
 			this.scene.add(mesh);
 			return mesh;
 		},
+		Shader:function(geometry, options) {
+			options = options || {};
+			var material = new THREE.ShaderMaterial({
+				uniforms:options.uniforms || {},
+				vertexShader:[
+					stringifyShaderChunk(options.vertexParameters),
+					'void main(){',
+					stringifyShaderChunk(options.vertexInit),
+					'#include <begin_vertex>',
+					stringifyShaderChunk(options.vertexPosition),
+					'#include <project_vertex>',
+					'}'
+				].join('\n'),
+				fragmentShader:[
+					stringifyShaderChunk(options.fragmentParameters),
+					'void main(){',
+					'vec4 diffuseColor = vec4(1.0);',
+					stringifyShaderChunk(options.fragmentDiffuse),
+					'gl_FragColor = diffuseColor;',
+					'}'
+				].join('\n'),
+				wireframe:true
+			});
+			return this.Shape(geometry, material);
+		},
 		Points:function(geometry, material) {
 			var material = material || new THREE.PointsMaterial({size:0.1});
 			var geometry = geometry || new THREE.BoxGeometry();
 			var points = new THREE.Points(geometry, material);
 			this.scene.add(points);
 			return points;
+		},
+		PointsShader:function(geometry, options){
+			options = options || {};
+			var uniforms = options.uniforms || {};
+			uniforms.size = uniforms.size || {value:1};
+			var material = new THREE.ShaderMaterial({
+				uniforms:uniforms,
+				vertexShader:[
+					'uniform float size;',
+					stringifyShaderChunk(options.vertexParameters),
+					'void main(){',
+					stringifyShaderChunk(options.vertexInit),
+					'#include <begin_vertex>',
+					stringifyShaderChunk(options.vertexPosition),
+					'#include <project_vertex>',
+					'float pointSize = size;',
+					stringifyShaderChunk(options.pointSize),
+					'gl_PointSize = pointSize;',
+					'}'
+				].join('\n'),
+				fragmentShader:[
+					stringifyShaderChunk(options.fragmentParameters),
+					'void main(){',
+					'vec4 diffuseColor = vec4(1.0);',
+					stringifyShaderChunk(options.fragmentDiffuse),
+					'gl_FragColor = diffuseColor;',
+					'}'
+				].join('\n')
+			});
+			return this.Points(geometry, material);
 		},
 		Line:function(geometry) {
 			var material = new THREE.LineBasicMaterial();
@@ -152,6 +207,22 @@
 			return this.datGUI;
 		}
 	});
+
+	function stringifyShaderChunk(value) {
+
+		var shaderChunk;
+
+		if (!value){
+			shaderChunk = '';
+		} else if (typeof value === 'string'){
+			shaderChunk = value;
+		} else {
+			shaderChunk = value.join('\n');
+		}
+
+		return shaderChunk;
+
+	}
 
 	window.D3SCENE = function(options) {
 		return new component(options).init();
